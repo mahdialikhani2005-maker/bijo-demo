@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from sqlalchemy import text
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -19,36 +17,25 @@ from app.routes import heart as heart_routes
 from app.routes import premium as premium_routes
 from app.routes import review as review_routes
 
-# ساخت جداول دیتابیس (فقط جداول جدیدی که کلاً وجود ندارن رو می‌سازه؛
-# به جدول‌های موجود ستون اضافه نمی‌کنه)
+
+# ============================================================
+# ساخت جداول دیتابیس
+# ============================================================
 Base.metadata.create_all(bind=engine)
 
 
-# ---------------------------------------------------------------
-# مینی-مایگریشن دستی: چون Alembic هنوز راه‌اندازی نشده و رندر (پلن
-# رایگان Postgres) دسترسی Shell نمیده، ستون‌هایی که به جدول‌های از
-# قبل موجود اضافه می‌کنیم رو همینجا با IF NOT EXISTS اضافه می‌کنیم.
-# این کد امنه و هر بار سرور بالا بیاد بدون خطا دوباره اجرا میشه
-# (چون IF NOT EXISTS از خطای "ستون از قبل هست" جلوگیری می‌کنه).
-# ---------------------------------------------------------------
-def run_startup_migrations():
-    statements = [
-        "ALTER TABLE users ADD COLUMN IF NOT EXISTS device_id VARCHAR",
-    ]
-    with engine.connect() as conn:
-        for stmt in statements:
-            conn.execute(text(stmt))
-        conn.commit()
-
-
-run_startup_migrations()
-
+# ============================================================
+# ساخت اپ FastAPI
+# ============================================================
 app = FastAPI(
-    title="Language Learning App API",
+    title="Bijo - Language Learning App API",
     debug=True
 )
 
-# تنظیم CORS برای اتصال فرانت‌اند
+
+# ============================================================
+# CORS (برای اتصال فرانت‌اند)
+# ============================================================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -57,36 +44,70 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -------------------------
-# Routes
-# -------------------------
 
+# ============================================================
+# Routes (API endpoints)
+# ============================================================
 app.include_router(auth.router, prefix="/api")
 app.include_router(progress_routes.router, prefix="/api")
 app.include_router(heart_routes.router, prefix="/api")
 app.include_router(premium_routes.router, prefix="/api")
 app.include_router(review_routes.router, prefix="/api")
 
-# -------------------------
+
+# ============================================================
 # Health Check
-# (این باید قبل از مسیر عمومی {file_name} تعریف بشه، وگرنه
-# اون مسیر جلوشو می‌گیره و همیشه "Not Found" برمی‌گردونه)
-# -------------------------
+# ============================================================
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
-# -------------------------
-# Static Files
-# -------------------------
+
+# ============================================================
+# مسیرهای فایل‌ها
+# ============================================================
+# BASE_DIR = ریشه‌ی پروژه (bijo/)
+# چون main.py توی backend/app/ هست، سه بار parent می‌گیریم
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+# مسیر فایل‌های درس
+LESSONS_DIR = BASE_DIR / "lessons_data"
+
+
+# ============================================================
+# فایل‌های استاتیک (فرانت‌اند)
+# ============================================================
+# /static/... → BASE_DIR
 app.mount("/static", StaticFiles(directory=str(BASE_DIR)), name="static")
 
+
+# ============================================================
+# فایل‌های درس (بک‌اند)
+# ============================================================
+# /lessons/... → lessons_data/
+if LESSONS_DIR.exists():
+    app.mount("/lessons", StaticFiles(directory=str(LESSONS_DIR)), name="lessons")
+    print(f"✅ Lessons mounted from: {LESSONS_DIR}")
+else:
+    print(f"⚠️  Lessons directory not found: {LESSONS_DIR}")
+    print(f"   Create it with: mkdir -p {LESSONS_DIR}")
+
+
+# ============================================================
+# صفحه‌ی اصلی
+# ============================================================
 @app.get("/")
 async def serve_home():
-    return FileResponse(str(BASE_DIR / "home.html"))
+    home_file = BASE_DIR / "home.html"
+    if home_file.exists():
+        return FileResponse(str(home_file))
+    return {"detail": "home.html not found"}
 
+
+# ============================================================
+# سرو کردن فایل‌های HTML
+# (باید آخر باشه، وگرنه مسیرهای دیگه رو می‌گیره)
+# ============================================================
 @app.get("/{file_name}")
 async def serve_html(file_name: str):
     file_path = BASE_DIR / file_name
