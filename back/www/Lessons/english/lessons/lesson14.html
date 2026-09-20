@@ -1,0 +1,32 @@
+<!-- ============================================ -->
+<!-- LESSON 14 - Family (خانواده) -->
+<!-- ============================================ -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<script src="../../config.js"></script>
+  <meta charset="UTF-8">
+  <title>Lesson 14</title>
+  <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<a href="../index.html" id="exit-lesson-btn" onclick="return confirm('از این درس خارج بشی؟ (پیشرفتت تا همینجا ذخیره شده)');" style="position:fixed; top:16px; left:16px; z-index:200; background:white; border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.15); text-decoration:none; font-size:20px; color:#4b4b4b;">✕</a>
+
+<div id="hud">
+  ❤️ <span id="heart-count">-</span>
+</div>
+
+  <div id="app">
+    <h2 id="question-title"></h2>
+    <button id="repeat-audio-btn" class="audio-btn" style="display:none;">🔊 تکرار گفتار</button>
+    <div id="question-content"></div>
+    <div id="word-builder" class="word-builder" tabindex="0" aria-label="Sentence builder"></div>
+    <div id="options"></div>
+  </div>
+
+ <script src="../../dataStorage.js"></script>
+  <script src="lesson14.js"></script>
+
+</body>
+</html>
