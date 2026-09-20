@@ -1,0 +1,109 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+#intro-container {
+  max-width: 800px;
+  width: 100%;
+  background: white;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+#lesson-title {
+  font-size: 28px;
+  color: #2d3436;
+  margin-bottom: 8px;
+}
+
+#lesson-subtitle {
+  font-size: 16px;
+  color: #636e72;
+  margin-bottom: 30px;
+}
+
+#word-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.word-card {
+  background: #f8f9fa;
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.word-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  border-color: #74b9ff;
+}
+
+.word-card img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.word-card .word-en {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d3436;
+}
+
+.word-card .word-fa {
+  font-size: 14px;
+  color: #636e72;
+}
+
+.btn-start {
+  background: linear-gradient(135deg, #00b894, #00cec9);
+  color: white;
+  border: none;
+  padding: 14px 48px;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-start:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 30px rgba(0, 206, 201, 0.3);
+}
+
+.intro-footer p {
+  color: #636e72;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* 📱 واکنش‌گرا */
+@media (max-width: 600px) {
+  #word-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
